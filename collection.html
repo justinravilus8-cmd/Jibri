@@ -34,166 +34,182 @@
         .nav-links a { text-decoration: none; color: var(--texte-muet); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1rem; transition: 0.3s; }
         .nav-links a:hover { color: var(--or); }
 
-        .menu-toggle { display: none; flex-direction: column; cursor: pointer; z-index: 1002; }
-        .bar { width: 25px; height: 1px; background-color: var(--or); margin: 4px 0; transition: 0.4s; }
-
-        /* --- Catalogue & Filtres --- */
+        /* --- Filtres --- */
         .filter-container { text-align: center; padding: 4rem 10% 2rem; }
-        .filter-btn { background: transparent; border: 1px solid rgba(201,169,110,0.3); color: var(--texte-muet); padding: 0.8rem 2rem; margin: 0.5rem; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1rem; transition: 0.4s var(--transition-smooth); font-size: 0.7rem; }
+        .filter-group { margin-bottom: 1.5rem; }
+        .filter-label { display: block; color: var(--or); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.2rem; margin-bottom: 1rem; opacity: 0.8; }
+        .filter-btn { background: transparent; border: 1px solid rgba(201,169,110,0.3); color: var(--texte-muet); padding: 0.8rem 1.5rem; margin: 0.3rem; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1rem; transition: 0.4s var(--transition-smooth); font-size: 0.65rem; }
         .filter-btn.active { border-color: var(--or); color: var(--or); background: rgba(201, 169, 110, 0.05); }
-        .filter-btn:hover { border-color: var(--or); color: var(--or); letter-spacing: 0.2rem; }
-        
+
+        /* --- Galerie --- */
         .grid-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2.5rem; padding: 2rem 10% 8rem; }
-        
-        /* --- Animation de Cascade --- */
-        .card { 
-            position: relative; 
-            height: 450px; 
-            overflow: hidden; 
-            background: var(--noir-surface); 
-            border: 1px solid rgba(201,169,110,0.1); 
-            cursor: pointer; 
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.8s var(--transition-smooth), transform 0.8s var(--transition-smooth), border-color 0.5s; 
-        }
-        
+        .card { position: relative; height: 450px; overflow: hidden; background: var(--noir-surface); border: 1px solid rgba(201,169,110,0.1); cursor: pointer; opacity: 0; transform: translateY(40px); transition: opacity 0.8s var(--transition-smooth), transform 0.8s var(--transition-smooth), border-color 0.5s; }
         .card.reveal { opacity: 1; transform: translateY(0); }
+        .card.hidden { display: none; }
         .card:hover { border-color: var(--or); transform: translateY(-10px) !important; }
-        
         .card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.4; transition: 1.2s var(--transition-smooth); }
         .card:hover img { opacity: 0.8; transform: scale(1.1); }
-        
-        .card-info { position: absolute; bottom: 2rem; left: 2rem; pointer-events: none; transition: 0.5s; }
-        .card-info h3 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 0.5rem; letter-spacing: 0.05rem; }
+        .card-info { position: absolute; bottom: 2rem; left: 2rem; pointer-events: none; }
+        .card-info h3 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 0.5rem; }
         .card-info p { color: var(--or); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.2rem; }
-
-        .hidden { display: none; }
-
-        @media (max-width: 900px) {
-            .menu-toggle { display: flex; }
-            .nav-links { position: fixed; right: -100%; top: 0; height: 100vh; width: 100%; background: var(--noir); flex-direction: column; justify-content: center; align-items: center; transition: 0.5s; z-index: 1001; }
-            .nav-links.active { right: 0; }
-            .grid-gallery { padding: 2rem 5% 5rem; }
-        }
     </style>
 </head>
 <body>
 
     <div id="loader">
-        <div class="loader-content">
-            <h1 class="loader-logo">JIBRI</h1>
-            <div class="loader-bar"></div>
-        </div>
+        <div class="loader-content"><h1 class="loader-logo">JIBRI</h1><div class="loader-bar"></div></div>
     </div>
 
     <nav>
         <a href="index.html" class="logo">JIBRI</a>
-        <div class="menu-toggle" id="mobile-menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-        </div>
         <ul class="nav-links">
             <li><a href="index.html">Accueil</a></li>
-            <li><a href="index.html#exposition">Exposition</a></li>
-            <li><a href="index.html#contact">Contact</a></li>
+            <li><a href="#exposition">Exposition</a></li>
+            <li><a href="#contact">Contact</a></li>
         </ul>
     </nav>
 
     <div class="filter-container">
-        <p style="color: var(--or); letter-spacing: 0.3rem; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 1rem;">Catalogue Exclusif</p>
         <h1 style="font-family: var(--font-display); font-size: 3rem; color: white; margin-bottom: 2.5rem;">La Collection</h1>
         
-        <button class="filter-btn active" onclick="filterItems('all', this)">Tous</button>
-        <button class="filter-btn" onclick="filterItems('bague', this)">Bagues</button>
-        <button class="filter-btn" onclick="filterItems('bracelet', this)">Bracelets</button>
-        <button class="filter-btn" onclick="filterItems('collier', this)">Colliers</button>
+        <div class="filter-group" id="group-type">
+            <span class="filter-label">Catégories</span>
+            <button class="filter-btn active" onclick="setFilter('type', 'all', this)">Tous</button>
+            <button class="filter-btn" onclick="setFilter('type', 'bague', this)">Bagues</button>
+            <button class="filter-btn" onclick="setFilter('type', 'bracelet', this)">Bracelets</button>
+            <button class="filter-btn" onclick="setFilter('type', 'collier', this)">Colliers</button>
+            <button class="filter-btn" onclick="setFilter('type', 'montre', this)">Ensembles</button>
+        </div>
+
+        <div class="filter-group" style="border-top: 1px solid rgba(201,169,110,0.1); padding-top: 1.5rem;" id="group-universe">
+            <span class="filter-label">Univers</span>
+            <button class="filter-btn active" onclick="setFilter('universe', 'all', this)">Tout l'univers</button>
+            <button class="filter-btn" onclick="setFilter('universe', 'homme', this)">Homme</button>
+            <button class="filter-btn" onclick="setFilter('universe', 'femme', this)">Femme</button>
+        </div>
     </div>
 
     <div class="grid-gallery" id="gallery">
-        <div class="card bague">
-            <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=800" alt="Bague">
-            <div class="card-info"><h3>Alliance Éternité</h3><p>Or Jaune 18K</p></div>
-        </div>
-        <div class="card bracelet">
-            <img src="https://i.postimg.cc/kgSttPQJ/test2.jpg" alt="Bracelet">
-            <div class="card-info"><h3>Éclat Nocturne</h3><p>Onyx & Diamants</p></div>
-        </div>
-        <div class="card collier">
-            <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=800" alt="Collier">
-            <div class="card-info"><h3>Sautoir Royal</h3><p>Perles de Culture</p></div>
-        </div>
-        <div class="card bague">
-            <img src="https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=800" alt="Bague">
-            <div class="card-info"><h3>Solitaire Pur</h3><p>Platine & Diamant</p></div>
-        </div>
-        <div class="card bracelet">
-            <img src="https://i.postimg.cc/901YK5xp/test1.jpg" alt="Bracelet">
-            <div class="card-info"><h3>Alhambra Onice</h3><p>Édition Héritage</p></div>
-        </div>
-        <div class="card collier">
-            <img src="https://images.unsplash.com/photo-1611085583191-a3b1a6a9344e?q=80&w=800" alt="Collier">
-            <div class="card-info"><h3>Pendentif Astral</h3><p>Or Rose & Saphir</p></div>
-        </div>
+        <div class="card bague"><img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=800"><div class="card-info"><h3>Alliance Éternité</h3><p>Or Jaune 18K</p></div></div>
+        <div class="card bracelet"><img src="https://i.postimg.cc/kgSttPQJ/test2.jpg"><div class="card-info"><h3>Éclat Nocturne</h3><p>Onyx & Diamants</p></div></div>
+        <div class="card collier"><img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=800"><div class="card-info"><h3>Sautoir Royal</h3><p>Perles de Culture</p></div></div>
+        <div class="card bracelet"><img src="https://i.postimg.cc/901YK5xp/test1.jpg"><div class="card-info"><h3>Alhambra Onice</h3><p>Édition Héritage</p></div></div>
+       
+        <div class="card collier"> <img src="https://i.postimg.cc/NfshgW3x/test5.jpg"> <div class="card-info"><h3>Bague Signature</h3><p>Or Pur & Rubis</p></div></div>
+        <div class="card bague"> <img src="https://i.postimg.cc/J0RFzk2t/test6.jpg"> <div class="card-info"><h3>Bracelet Mystique</h3><p>Argent & Emeraude</p></div></div>
+        <div class="card femme"> <img src="https://i.postimg.cc/sxfnrRMB/test7.jpg"> <div class="card-info"><h3>Chaine Infinie</h3><p>Platine</p></div></div>
+        <div class="card bague"> <img src="https://i.postimg.cc/MGkdGBnN/test8.jpg"> <div class="card-info"><h3>Céleste</h3><p>Diamant Bleu</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/Pr5t6p5w/test9.jpg"> <div class="card-info"><h3>Jonc Royal</h3><p>Or Rose</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/tCwLhY1h/test10.jpg"> <div class="card-info"><h3>Éclat d'Or</h3><p>Or 24K</p></div></div>
+        <div class="card femme"> <img src="https://i.postimg.cc/pTsSyTb0/test11.jpg"> <div class="card-info"><h3>Création Jibri</h3><p>Édition Limitée</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/904LMYYk/test12.jpg"> <div class="card-info"><h3>Sautoir Perle</h3><p>Perle Noire</p></div></div>
+        <div class="card bague"> <img src="https://i.postimg.cc/TYDkvQwj/test13.jpg"> <div class="card-info"><h3>Diamant Pur</h3><p>VVS1</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/63q0jfg7/test14.jpg"> <div class="card-info"><h3>Manchette Luxe</h3><p>Or & Cuir</p></div></div>
+        <div class="card bague"> <img src="https://i.postimg.cc/26LHjxGq/test15.jpg"> <div class="card-info"><h3>Impériale</h3><p>Topaze Impériale</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/g2qbmGjP/test16.jpg"> <div class="card-info"><h3>Aube</h3><p>Or Rose & Nacre</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/VNKy04Xj/test17.jpg"> <div class="card-info"><h3>Zénith</h3><p>Diamant Jaune</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/85Yqt5K5/test18.jpg"> <div class="card-info"><h3>Héritage</h3><p>Design Ancien</p></div></div>
+        <div class="card bracelet"> <img src="https://i.postimg.cc/jdySn02d/test19.jpg"> <div class="card-info"><h3>Lumière</h3><p>Cristal de Roche</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/tgvqG9vb/test20.jpg"> <div class="card-info"><h3>Océan</h3><p>Saphir Profond</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/zvCYvN7Y/test21.jpg"> <div class="card-info"><h3>Prestige</h3><p>Or Gris</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/Qd4GH0QY/test22.jpg"> <div class="card-info"><h3>Nuit Étoilée</h3><p>Lapis-Lazuli</p></div></div>
+        <div class="card bague"> <img src="https://i.postimg.cc/KjrCFNc7/test23.jpg"> <div class="card-info"><h3>Soleil</h3><p>Citrine Ambrée</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/bwv4ck7s/test24.jpg"> <div class="card-info"><h3>Harmonie</h3><p>Jade Vert</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/C5Nr9xJz/test25.jpg"> <div class="card-info"><h3>Opulence</h3><p>Or & Diamants</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/hthZ3gmM/test26.jpg"> <div class="card-info"><h3>Aura</h3><p>Améthyste</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/KYpLzkvt/test27.jpg"> <div class="card-info"><h3>Divine</h3><p>Quartz Rose</p></div></div>
+        <div class="card bague"> <img src="https://i.postimg.cc/BZKDSvWP/test28.jpg"> <div class="card-info"><h3>Majesté</h3><p>Émeraude Colombie</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/VLPtdcms/test29.jpg"> <div class="card-info"><h3>Éclat</h3><p>Diamant Poire</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/Gpt8ZLJL/test30.jpg"> <div class="card-info"><h3>Trésor</h3><p>Rubis Birman</p></div></div>
+        <div class="card bague"> <img src="https://i.postimg.cc/DZbWwxNF/test31.jpg"> <div class="card-info"><h3>Comète</h3><p>Argent & Zircon</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/L5KJYzdQ/test32.jpg"> <div class="card-info"><h3>Solaire</h3><p>Diamant Champagne</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/KvbKmrDS/test33.jpg"> <div class="card-info"><h3>Lunaire</h3><p>Pierre de lune</p></div></div>
+        <div class="card bracelet"> <img src="https://i.postimg.cc/Njf5HsVQ/test34.jpg"> <div class="card-info"><h3>Galaxie</h3><p>Opale Noire</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/jqH53n0F/test35.jpg"> <div class="card-info"><h3>Astre</h3><p>Or Blanc</p></div></div>
+        <div class="card bracelet"> <img src="https://i.postimg.cc/90CWH15d/test36.jpg"> <div class="card-info"><h3>Mirage</h3><p>Topaze Bleue</p></div></div>
+        <div class="card bracelet"> <img src="https://i.postimg.cc/tCRXrrzZ/test37.jpg"> <div class="card-info"><h3>Infini</h3><p>Platine Brute</p></div></div>
+        <div class="card bracelet"> <img src="https://i.postimg.cc/1tZSDMt8/test38.jpg"> <div class="card-info"><h3>Éternité</h3><p>Pavage Diamants</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/nV2xQ4tJ/test39.jpg"> <div class="card-info"><h3>Renaissance</h3><p>Style Baroque</p></div></div>
+        <div class="card bracelet"> <img src="https://i.postimg.cc/BnrfGN2y/test40.jpg"> <div class="card-info"><h3>Élysée</h3><p>Or & Saphir Blanc</p></div></div>
+        <div class="card bracelet"> <img src="https://i.postimg.cc/FzWwCx9H/test41.jpg"> <div class="card-info"><h3>Aura Dorée</h3><p>Or Brossé</p></div></div>
+        <div class="card bracelet"> <img src="https://i.postimg.cc/HnZFvtpZ/test42.jpg"> <div class="card-info"><h3>Légende</h3><p>Rubis Sang de Pigeon</p></div></div>
+        <div class="card bracelet"> <img src="https://i.postimg.cc/NfnW1bCv/test43.jpg"> <div class="card-info"><h3>Aube Rose</h3><p>Saphir Padparadscha</p></div></div>
+        <div class="card bracelet"> <img src="https://i.postimg.cc/ZRKSfn8b/test44.jpg"> <div class="card-info"><h3>Mystère</h3><p>Tourmaline Noire</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/5NFMKZCF/test45.jpg"> <div class="card-info"><h3>Zénith Or</h3><p>Or 18K Poli</p></div></div>
+        <div class="card bracelet"> <img src="https://i.postimg.cc/qvsH4yQT/test46.jpg"> <div class="card-info"><h3>Symphonie</h3><p>Mélange de Pierres</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/HncFKyjN/test47.jpg"> <div class="card-info"><h3>Rêverie</h3><p>Aigue-Marine</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/0Ntk172M/test48.jpg"> <div class="card-info"><h3>Éclat Royal</h3><p>Diamant Princesse</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/ryR87060/test49.jpg"> <div class="card-info"><h3>Pureté</h3><p>Argent Rhodié</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/t4pp1Bsy/test50.jpg"> <div class="card-info"><h3>Luxe</h3><p>Diamant Baguette</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/Rhwxht9h/test51.jpg"> <div class="card-info"><h3>Héritier</h3><p>Chevalière Or</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/wjw81g88/test52.jpg"> <div class="card-info"><h3>Obsidienne</h3><p>Pierre Noire</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/9fk6BbQJ/test53.jpg"> <div class="card-info"><h3>Cristal</h3><p>Quartz Pur</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/VLF2hmNS/test54.jpg"> <div class="card-info"><h3>Stellaire</h3><p>Or Gris & Saphir</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/zGt6J7Wc/test55.jpg"> <div class="card-info"><h3>Nova</h3><p>Diamant & Or</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/q7WFK71D/test56.jpg"> <div class="card-info"><h3>Galactique</h3><p>Argent & Onyx</p></div></div>
+        <div class="card montre"> <img src="https://i.postimg.cc/HsThXRt1/test57.jpg"> <div class="card-info"><h3>Comète d'Or</h3><p>Or Pur</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/LsgCmpm2/test58.jpg"> <div class="card-info"><h3>Astre</h3><p>Saphir Bleu</p></div></div>
+        <div class="card collier"> <img src="https://i.postimg.cc/DZqxbPJf/test59.jpg"> <div class="card-info"><h3>Ultima</h3><p>Diamant Noir</p></div></div>
     </div>
 
     <script>
-        // --- Apparition en Cascade ---
+        // On garde en mémoire les deux sélections
+        let activeFilters = {
+            type: 'all',
+            universe: 'all'
+        };
+
         function triggerCascade() {
             const cards = document.querySelectorAll('.card:not(.hidden)');
             cards.forEach((card, index) => {
                 setTimeout(() => {
                     card.classList.add('reveal');
-                }, index * 150); // 150ms de délai entre chaque carte
+                }, index * 50); // Plus rapide pour 59 articles
             });
         }
 
-        // --- Preloader ---
+        function setFilter(group, value, btn) {
+            // 1. Mettre à jour l'état
+            activeFilters[group] = value;
+
+            // 2. Gérer l'apparence des boutons du groupe cliqué
+            const groupID = group === 'type' ? 'group-type' : 'group-universe';
+            document.querySelectorAll(`#${groupID} .filter-btn`).forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // 3. Lancer le filtrage
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const cards = document.querySelectorAll('.card');
+            
+            // Cacher tout avec animation
+            cards.forEach(card => {
+                card.classList.remove('reveal');
+                setTimeout(() => card.classList.add('hidden'), 300);
+            });
+
+            setTimeout(() => {
+                cards.forEach(card => {
+                    const matchType = (activeFilters.type === 'all' || card.classList.contains(activeFilters.type));
+                    const matchUniverse = (activeFilters.universe === 'all' || card.classList.contains(activeFilters.universe));
+
+                    if (matchType && matchUniverse) {
+                        card.classList.remove('hidden');
+                    }
+                });
+                triggerCascade();
+            }, 350);
+        }
+
         window.addEventListener('load', () => {
             const loader = document.getElementById('loader');
             setTimeout(() => { 
                 loader.classList.add('loader-hidden'); 
-                triggerCascade(); // Lancement au chargement
+                triggerCascade(); 
             }, 1200);
         });
-
-        // --- Menu Mobile ---
-        const menu = document.querySelector('#mobile-menu');
-        const menuLinks = document.querySelector('.nav-links');
-        menu.addEventListener('click', () => {
-            menu.classList.toggle('is-active');
-            menuLinks.classList.toggle('active');
-        });
-
-        // --- Filtrage Intelligent ---
-        function filterItems(category, btn) {
-            const cards = document.querySelectorAll('.card');
-            const buttons = document.querySelectorAll('.filter-btn');
-            
-            // UI : Bouton actif
-            buttons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            // 1. On cache d'abord avec une transition fluide
-            cards.forEach(card => {
-                card.classList.remove('reveal');
-            });
-
-            // 2. On attend la fin de l'animation de sortie avant de filtrer
-            setTimeout(() => {
-                cards.forEach(card => {
-                    if(category === 'all' || card.classList.contains(category)) {
-                        card.classList.remove('hidden');
-                    } else {
-                        card.classList.add('hidden');
-                    }
-                });
-                
-                // 3. On relance la cascade sur les nouveaux éléments visibles
-                triggerCascade();
-            }, 500);
-        }
     </script>
 </body>
 </html>
