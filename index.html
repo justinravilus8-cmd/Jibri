@@ -23,6 +23,41 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: var(--noir); color: var(--blanc-creme); font-family: var(--font-sans); cursor: none; overflow-x: hidden; }
 
+        /* --- PRELOADER --- */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--noir);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 1s var(--transition-smooth), visibility 1s;
+        }
+        .loader-content { text-align: center; }
+        .loader-logo {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            color: var(--or);
+            letter-spacing: 1rem;
+            margin-bottom: 1rem;
+            animation: pulse-gold 2s infinite ease-in-out;
+            text-transform: uppercase;
+        }
+        .loader-bar {
+            width: 0;
+            height: 1px;
+            background: var(--or);
+            margin: 0 auto;
+            animation: load-line 1.5s var(--transition-smooth) forwards;
+        }
+        .loader-hidden { opacity: 0; visibility: hidden; }
+        @keyframes pulse-gold {
+            0%, 100% { opacity: 0.5; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes load-line { to { width: 150px; } }
+
         /* --- Curseur --- */
         #cursor { position: fixed; width: 8px; height: 8px; background: var(--or); border-radius: 50%; pointer-events: none; z-index: 10000; transform: translate(-50%, -50%); }
         #cursor-ring { position: fixed; width: 40px; height: 40px; border: 1px solid var(--or); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: all 0.2s var(--transition-smooth); opacity: 0.5; }
@@ -91,9 +126,7 @@
         @media (max-width: 900px) {
             body { cursor: auto; }
             #cursor, #cursor-ring { display: none; }
-            
             .menu-toggle { display: flex; }
-            
             .nav-links {
                 position: fixed;
                 right: -100%;
@@ -107,14 +140,10 @@
                 transition: 0.5s var(--transition-smooth);
                 z-index: 1001;
             }
-
             .nav-links.active { right: 0; }
-            
             .grid-gallery { display: flex; flex-direction: column; }
             .card-large, .card-small, .card-full { height: 350px; }
             .section-padding { padding: 4rem 5%; }
-
-            /* Animation du Burger */
             .is-active .bar:nth-child(2) { opacity: 0; }
             .is-active .bar:nth-child(1) { transform: translateY(9px) rotate(45deg); }
             .is-active .bar:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
@@ -122,6 +151,13 @@
     </style>
 </head>
 <body>
+
+    <div id="loader">
+        <div class="loader-content">
+            <h1 class="loader-logo">JIBRI</h1>
+            <div class="loader-bar"></div>
+        </div>
+    </div>
 
     <div id="cursor"></div>
     <div id="cursor-ring"></div>
@@ -133,13 +169,11 @@
 
     <nav>
         <a href="index.html" class="logo">JIBRI</a>
-        
         <div class="menu-toggle" id="mobile-menu">
             <span class="bar"></span>
             <span class="bar"></span>
             <span class="bar"></span>
         </div>
-
         <ul class="nav-links">
             <li><a href="collection.html">La Collection</a></li>
             <li><a href="#savoir-faire">L'Atelier</a></li>
@@ -190,9 +224,6 @@
                 <p style="color: var(--texte-muet); line-height: 1.8; margin-bottom: 1.5rem;">
                     Chaque pièce signée JIBRI est une symphonie de précision. Nous fusionnons l'art ancestral de la forge avec une vision contemporaine du luxe.
                 </p>
-                <p style="color: var(--texte-muet); line-height: 1.8;">
-                    Nos mains sculptent l'or et sélectionnent des gemmes vibrantes pour donner vie à vos rêves les plus précieux.
-                </p>
             </div>
             <div class="flex-item reveal-on-scroll" style="border: 1px solid var(--or); padding: 1rem;">
                 <img src="https://i.postimg.cc/Kcd9Xx8x/test4.jpg" style="width: 100%; filter: sepia(40%) grayscale(20%); display: block;">
@@ -221,16 +252,22 @@
             <a href="https://wa.me/+509-38214561" target="_blank">WHATSAPP</a>
         </div>
         <div style="margin-top: 2rem; opacity: 0.5;">
-            <p style="font-size: 0.6rem; letter-spacing: 0.2rem; text-transform: uppercase; margin-bottom: 0.5rem;">Atelier Privé — Sur Rendez-vous uniquement</p>
-            <p style="color: var(--texte-muet); font-size: 0.7rem; letter-spacing: 0.1rem;">© 2026 JIBRI JOAILLERIE · TOUS DROITS RÉSERVÉS</p>
+            <p style="font-size: 0.6rem; letter-spacing: 0.2rem; text-transform: uppercase; margin-bottom: 0.5rem;">Atelier Privé — © 2026 JIBRI JOAILLERIE</p>
         </div>
     </footer>
 
     <script>
+        // Gestion du Preloader
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            setTimeout(() => {
+                loader.classList.add('loader-hidden');
+            }, 1800); // 1.8s pour laisser le temps à l'animation de se faire
+        });
+
         // Menu Mobile Toggle
         const menu = document.querySelector('#mobile-menu');
         const menuLinks = document.querySelector('.nav-links');
-
         menu.addEventListener('click', function() {
             menu.classList.toggle('is-active');
             menuLinks.classList.toggle('active');
