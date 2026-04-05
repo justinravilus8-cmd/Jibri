@@ -19,7 +19,11 @@
             --transition-smooth: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        html { scroll-behavior: smooth; }
+        /* --- 2. SMOOTH SCROLL --- */
+        html { 
+            scroll-behavior: smooth; 
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: var(--noir); color: var(--blanc-creme); font-family: var(--font-sans); cursor: none; overflow-x: hidden; }
 
@@ -119,8 +123,16 @@
 
         @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
 
-        .reveal-on-scroll { opacity: 0; transform: translateY(30px); transition: 1s var(--transition-smooth); }
-        .reveal-on-scroll.active { opacity: 1; transform: translateY(0); }
+        /* --- 3. SCROLL REVEAL (STYLISÉ) --- */
+        .reveal-on-scroll { 
+            opacity: 0; 
+            transform: translateY(40px); 
+            transition: all 1s var(--transition-smooth); 
+        }
+        .reveal-on-scroll.active { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
 
         /* --- RESPONSIVE MOBILE --- */
         @media (max-width: 900px) {
@@ -262,7 +274,7 @@
             const loader = document.getElementById('loader');
             setTimeout(() => {
                 loader.classList.add('loader-hidden');
-            }, 1800); // 1.8s pour laisser le temps à l'animation de se faire
+            }, 1800);
         });
 
         // Menu Mobile Toggle
@@ -298,12 +310,23 @@
         }
         lightbox.onclick = (e) => { if (e.target !== lightboxImg) closeLightbox(); };
 
-        // Scroll Reveal
+        // --- 3. SCROLL REVEAL AMÉLIORÉ ---
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
         const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('active');
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    // On ajoute un délai progressif si plusieurs éléments apparaissent en même temps
+                    setTimeout(() => {
+                        entry.target.classList.add('active');
+                    }, index * 100);
+                }
             });
-        }, { threshold: 0.1 });
+        }, observerOptions);
+
         document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
     </script>
 </body>
