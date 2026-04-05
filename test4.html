@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JIBRI — Galerie de Haute Joaillerie</title>
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/RVdn7L8G/favicon.jpg">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/RVdn7L8G/favicon.jpg">
+    <style>
+        :root {
+            --or: #C9A96E;
+            --or-clair: #E8D5A3;
+            --noir: #080808;
+            --noir-surface: #121212;
+            --blanc-creme: #F5F0E8;
+            --texte-muet: #A89880;
+            --font-display: 'Palatino', 'Georgia', serif;
+            --font-sans: 'Century Gothic', 'Optima', sans-serif;
+            --transition-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        html { scroll-behavior: smooth; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--noir); color: var(--blanc-creme); font-family: var(--font-sans); cursor: none; overflow-x: hidden; }
+
+        /* --- Curseur --- */
+        #cursor { position: fixed; width: 8px; height: 8px; background: var(--or); border-radius: 50%; pointer-events: none; z-index: 10000; transform: translate(-50%, -50%); }
+        #cursor-ring { position: fixed; width: 40px; height: 40px; border: 1px solid var(--or); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: all 0.2s var(--transition-smooth); opacity: 0.5; }
+
+        /* --- Navigation --- */
+        nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 2rem 5%; z-index: 1000; background: linear-gradient(to bottom, var(--noir), transparent); }
+        .logo { font-family: var(--font-display); font-size: 1.8rem; letter-spacing: 0.5rem; color: var(--or); text-decoration: none; }
+        .nav-links { display: flex; gap: 3rem; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--texte-muet); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2rem; transition: 0.3s; }
+        .nav-links a:hover { color: var(--or); }
+
+        /* --- Hero --- */
+        .hero { height: 100vh; display: flex; align-items: center; padding: 0 10%; position: relative; }
+        .hero-title { font-family: var(--font-display); font-size: clamp(2.5rem, 8vw, 5.5rem); line-height: 1.1; opacity: 0; transform: translateY(30px); animation: reveal 1.2s var(--transition-smooth) forwards; }
+        .hero-title em { color: var(--or); font-style: italic; }
+
+        /* --- Galerie & Sections --- */
+        .section-padding { padding: 8rem 10%; }
+        .section-title { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 4rem; text-align: center; color: var(--or); }
+        .grid-gallery { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2rem; }
+        
+        .card { position: relative; overflow: hidden; background: var(--noir-surface); border: 1px solid rgba(201, 169, 110, 0.1); transition: 0.5s var(--transition-smooth); cursor: pointer; }
+        .card:hover { border-color: var(--or); }
+        .card-large { grid-column: span 7; height: 500px; }
+        .card-small { grid-column: span 5; height: 500px; }
+        .card-full  { grid-column: span 12; height: 450px; }
+
+        .card-image-wrap { position: absolute; inset: 0; overflow: hidden; }
+        .card-img { width: 100%; height: 115%; object-fit: cover; opacity: 0.5; transition: 1.2s var(--transition-smooth); filter: grayscale(30%); }
+        .card:hover .card-img { opacity: 0.9; transform: scale(1.1) translateY(-5%); filter: grayscale(0%); }
+        .card-image-wrap::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(8, 8, 8, 0.95) 5%, transparent 60%); }
+        .card-info { position: absolute; bottom: 2.5rem; left: 2.5rem; pointer-events: none; z-index: 2; }
+        .card-category { color: var(--or); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.25rem; margin-bottom: 0.5rem; }
+        .card-name { font-family: var(--font-display); font-size: 1.6rem; letter-spacing: 0.05rem; }
+
+        /* --- Atelier & Contact --- */
+        .flex-container { display: flex; flex-wrap: wrap; gap: 4rem; align-items: center; }
+        .flex-item { flex: 1; min-width: 300px; }
+        
+        input, textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(201, 169, 110, 0.3); padding: 1rem 0; color: white; margin-bottom: 2rem; outline: none; transition: 0.3s; font-family: var(--font-sans); }
+        input:focus, textarea:focus { border-bottom-color: var(--or); }
+        .btn-submit { background: transparent; border: 1px solid var(--or); color: var(--or); padding: 1rem 2.5rem; text-transform: uppercase; letter-spacing: 0.2rem; font-size: 0.7rem; cursor: pointer; transition: 0.4s; }
+        .btn-submit:hover { background: var(--or); color: var(--noir); }
+
+        /* --- Lightbox --- */
+        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        #lightbox img { max-width: 85%; max-height: 85%; border: 1px solid var(--or); padding: 5px; }
+        .close-lightbox { position: absolute; top: 30px; right: 40px; color: var(--or); font-size: 40px; cursor: pointer; }
+
+        /* --- Footer --- */
+        footer { padding: 5rem 10% 2rem; border-top: 1px solid rgba(201, 169, 110, 0.1); text-align: center; }
+        .social-links { margin: 2rem 0; display: flex; justify-content: center; gap: 2rem; }
+        .social-links a { color: var(--or); text-decoration: none; font-size: 0.7rem; letter-spacing: 0.15rem; transition: 0.3s; }
+        .social-links a:hover { color: white; }
+
+        @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Classes pour l'animation au scroll --- */
+        .reveal-on-scroll { opacity: 0; transform: translateY(30px); transition: 1s var(--transition-smooth); }
+        .reveal-on-scroll.active { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 900px) {
+            body { cursor: auto; }
+            #cursor, #cursor-ring, .nav-links { display: none; }
+            .grid-gallery { display: flex; flex-direction: column; }
+            .card-large, .card-small, .card-full { height: 350px; }
+            .section-padding { padding: 4rem 5%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+    <div id="cursor-ring"></div>
+
+    <div id="lightbox">
+        <span class="close-lightbox" onclick="closeLightbox()">&times;</span>
+        <img src="" alt="Zoom">
+    </div>
+
+    <nav>
+        <a href="#" class="logo">JIBRI</a>
+        <ul class="nav-links">
+            <li><a href="#exposition">Exposition</a></li>
+            <li><a href="#savoir-faire">L'Atelier</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">L'émotion de <em>l'unique</em>.</h1>
+            <p style="color: var(--texte-muet); margin-top: 1.5rem; letter-spacing: 0.1rem;">Une exposition privée de créations artisanales.</p>
+        </div>
+    </section>
+
+    <section id="exposition" class="section-padding">
+        <h2 class="section-title reveal-on-scroll">Pièces d'Exception</h2>
+        <div class="grid-gallery">
+            <div class="card card-large reveal-on-scroll" onclick="openLightbox(this)">
+                <div class="card-image-wrap"><img src="https://i.postimg.cc/VLDKHMpt/test3.jpg" class="card-img" alt="JIBRI"></div>
+                <div class="card-info">
+                    <p class="card-category">Sur-mesure</p>
+                    <h3 class="card-name">La Trilogie JIBRI</h3>
+                </div>
+            </div>
+            <div class="card card-small reveal-on-scroll" onclick="openLightbox(this)">
+                <div class="card-image-wrap"><img src="https://i.postimg.cc/kgSttPQJ/test2.jpg" class="card-img" alt="Éclat"></div>
+                <div class="card-info">
+                    <p class="card-category">Haute Joaillerie</p>
+                    <h3 class="card-name">Bracelet Éclat Nocturne</h3>
+                </div>
+            </div>
+            <div class="card card-full reveal-on-scroll" onclick="openLightbox(this)">
+                <div class="card-image-wrap"><img src="https://i.postimg.cc/901YK5xp/test1.jpg" class="card-img" alt="Alhambra"></div>
+                <div class="card-info">
+                    <p class="card-category">Collection Héritage</p>
+                    <h3 class="card-name">Bracelet Alhambra Onice</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="savoir-faire" class="section-padding" style="background-color: var(--noir-surface);">
+        <div class="flex-container">
+            <div class="flex-item reveal-on-scroll">
+                <p class="card-category">L'excellence du geste</p>
+                <h2 class="hero-title" style="font-size: 3rem; margin-bottom: 2rem;">L'Âme de <em>l'Artisan</em></h2>
+                <p style="color: var(--texte-muet); line-height: 1.8; margin-bottom: 1.5rem;">
+                    Chaque pièce signée JIBRI est une symphonie de précision. Nous fusionnons l'art ancestral de la forge avec une vision contemporaine du luxe.
+                </p>
+                <p style="color: var(--texte-muet); line-height: 1.8;">
+                    Nos mains sculptent l'or et sélectionnent des gemmes vibrantes pour donner vie à vos rêves les plus précieux.
+                </p>
+            </div>
+            <div class="flex-item reveal-on-scroll" style="border: 1px solid var(--or); padding: 1rem;">
+                <img src="https://i.postimg.cc/Kcd9Xx8x/test4.jpg" style="width: 100%; filter: sepia(40%) grayscale(20%); display: block;">
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="section-padding">
+        <div style="max-width: 600px; margin: 0 auto; text-align: center;" class="reveal-on-scroll">
+            <p class="card-category">Privé</p>
+            <h2 class="section-title">Prendre Rendez-vous</h2>
+            <form action="https://formspree.io/f/xpqoolek" method="POST">
+                <input type="text" name="name" placeholder="NOM COMPLET" required>
+                <input type="email" name="email" placeholder="ADRESSE EMAIL" required>
+                <textarea name="message" rows="4" placeholder="VOTRE PROJET DE CRÉATION"></textarea>
+                <button type="submit" class="btn-submit">Envoyer la demande</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <a href="#" class="logo">JIBRI</a>
+        
+        <div class="social-links">
+            <a href="https://instagram.com/jibri_store" target="_blank">INSTAGRAM</a>
+            <a href="https://tiktok.com/@jibri_store" target="_blank">TIKTOK</a>
+            <a href="https://wa.me/+509-38214561" target="_blank">WHATSAPP</a>
+        </div>
+
+        <div style="margin-top: 2rem; opacity: 0.5;">
+            <p style="font-size: 0.6rem; letter-spacing: 0.2rem; text-transform: uppercase; margin-bottom: 0.5rem;">
+                Atelier Privé — Sur Rendez-vous uniquement
+            </p>
+            <p style="color: var(--texte-muet); font-size: 0.7rem; letter-spacing: 0.1rem;">
+                © 2026 JIBRI JOAILLERIE · TOUS DROITS RÉSERVÉS
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const cursor = document.getElementById('cursor');
+        const ring = document.getElementById('cursor-ring');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = lightbox.querySelector('img');
+
+        // Curseur
+        if (window.innerWidth > 900) {
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+                ring.animate({ left: e.clientX + 'px', top: e.clientY + 'px' }, { duration: 500, fill: "forwards" });
+            });
+        }
+
+        // Lightbox
+        function openLightbox(card) {
+            lightboxImg.src = card.querySelector('img').src;
+            lightbox.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        lightbox.onclick = (e) => { if (e.target !== lightboxImg) closeLightbox(); };
+
+        // Animations au Scroll (Intersection Observer)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+
+        // Hover effects
+        document.querySelectorAll('.card, a, button, .close-lightbox').forEach(el => {
+            el.onmouseenter = () => { 
+                ring.style.width = '70px'; ring.style.height = '70px'; 
+                ring.style.borderColor = '#fff'; ring.style.backgroundColor = 'rgba(255,255,255,0.1)';
+            };
+            el.onmouseleave = () => { 
+                ring.style.width = '40px'; ring.style.height = '40px'; 
+                ring.style.borderColor = 'var(--or)'; ring.style.backgroundColor = 'transparent';
+            };
+        });
+    </script>
+</body>
+</html>
